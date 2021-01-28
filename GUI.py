@@ -13,11 +13,12 @@ def constrain(val, min_val, max_val):  # Fungsi contrain untuk membatasi suatu n
     return min(max_val, max(min_val, val))
 
 class deteksi:
-    def __init__(self,name,posisi,color):
-
+    def __init__(self,name,posisi,color,colorLapangan):
+        self.warnaLap = colorLapangan
         self.warna = color
         self.nama = name
         self.nama = cv2.findContours(self.warna, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[-2]
+        res2 = cv2.bitwise_or(self.warna, self.warnaLap)
 
         if posisi == "Atas":
             framApprox = frameUp
@@ -37,47 +38,48 @@ class deteksi:
             maxyy = (yy+h)+3
             huxx = xx+int(w/2)
             huyy = yy+int(h/2)
-            maxXX = constrain(maxxx, 0, 639)
-            maxYY = constrain(maxyy, 0, 479)
-            huXX = constrain(huxx, 0, 639)
-            huYY = constrain(huyy, 0, 479)
+            maxXX = constrain(maxxx, 0, 479)
+            maxYY = constrain(maxyy, 0, 319)
+            huXX = constrain(huxx, 0, 479)
+            huYY = constrain(huyy, 0, 319)
             if area is not None:
                 if name == "Hijau":
                     cv2.drawContours(framApprox, [approx], 0, Approx, 2)
-                else:       # ini detek orange
-                    pass
-                    # if np.any(res2[maxYY,maxXX]) or  np.any(res2[huYY,maxXX]) or  np.any(res2[maxYY,huXX]) or  np.any(res2[maxYY,xx-5]) or  np.any(res2[huYY,xx-5]) != 0:       ## pengecekan kiri atas bola adalah lapangan
-                        # cv2.rectangle(framApprox, (xx,yy), (xx+w, yy+h), (0,165,255), 2)              #Membuat kotak pada gambar maupun kamera  real-time
-                        # cv2.putText(framApprox, ("(" + str(int(x)) + "," + str(int(y)) + ")"), (int(x) - 35, int(y) + 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2) #Menempatkan text
-                        # cv2.line(framApprox, (330,490),pusat, (255,255,255), 2)                                    
-                        # cv2.line(framApprox, ((int(x), int(y))),(int(xx-5), int(huYY)), (0,255,0), 1)
-                        # cv2.line(framApprox, ((int(x), int(y))),(int(xx-5), int(maxYY)), (0,255,0), 1)
-                        # cv2.line(framApprox, ((int(x), int(y))),(int(huXX), int(maxYY)), (0,255,0), 1)
-                        # cv2.line(framApprox, ((int(x), int(y))),(int(maxXX), int(huYY)), (0,255,0), 1)
-                        # cv2.line(framApprox, ((int(x), int(y))),(int(maxXX), int(maxYY)), (0,255,0), 1)
-                        # print("BOLA TERDETEKSI")
+                elif name == "Orange":       # ini detek orange
+                    # pass
+                    # cv2.drawContours(framApprox, [approx], 0, Approx, 2)
+                    if np.any(res2[maxYY,maxXX]) or  np.any(res2[huYY,maxXX]) or  np.any(res2[maxYY,huXX]) or  np.any(res2[maxYY,xx-5]) or  np.any(res2[huYY,xx-5]) != 0:       ## pengecekan kiri atas bola adalah lapangan
+                        cv2.rectangle(framApprox, (xx,yy), (xx+w, yy+h), (0,165,255), 2)              #Membuat kotak pada gambar maupun kamera  real-time
+                        cv2.putText(framApprox, ("(" + str(int(x)) + "," + str(int(y)) + ")"), (int(x) - 35, int(y) + 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 2) #Menempatkan text
+                        cv2.line(framApprox, (330,490),(int(x), int(y)), (255,255,255), 2)                                    
+                        cv2.line(framApprox, ((int(x), int(y))),(int(xx-5), int(huYY)), (0,255,0), 1)
+                        cv2.line(framApprox, ((int(x), int(y))),(int(xx-5), int(maxYY)), (0,255,0), 1)
+                        cv2.line(framApprox, ((int(x), int(y))),(int(huXX), int(maxYY)), (0,255,0), 1)
+                        cv2.line(framApprox, ((int(x), int(y))),(int(maxXX), int(huYY)), (0,255,0), 1)
+                        cv2.line(framApprox, ((int(x), int(y))),(int(maxXX), int(maxYY)), (0,255,0), 1)
+                        print("BOLA TERDETEKSI")
                         # arduino.write(str(x).encode())  #Untuk Mengirim data X ke arduino
                         # arduino.write('x'.encode())     
                         # arduino.write(str(y).encode())  #Untuk Mengirim data y ke arduino
                         # arduino.write('y'.encode())
+                    else:
+                        cv2.drawContours(framApprox, [approx], 0, Approx, 2)
+
             else:           ## Jika bola tidak terdeteksi
                 if name == "Hijau":     ## Jika hijau tidak terdeteksi, pass yaudah
                     pass                ## ini memang pass, jangan dihapus
-                else:                   ## Jika orange tidak terdeteksi maka kirim 0 arduino
+                elif name == "Orange":                   ## Jika orange tidak terdeteksi maka kirim 0 arduino
                     pass                ## hapus pass yang ini kalo nak coba
-                    # cv2.drawContours(framApprox, [approx], 0, Approx, 2)
                     # print("BOLA NOTHING")
                     # arduino.write('0'.encode())
                     # arduino.write('x'.encode())
                     # arduino.write('0'.encode())
                     # arduino.write('y'.encode())
-
-        else:           ## Jika bola tidak ditekesi sama sekali
+        elif len(self.nama) == 0:           ## Jika bola tidak ditekesi sama sekali
             if name == "Hijau":
                 pass             ## ini memang pass, jangan dihapus
-            else:
+            elif name == "Orange":
                 pass            ## hapus pass yang ini kalo nak coba
-                # cv2.drawContours(framApprox, [approx], 0, Approx, 2)
                 # print("BOLA NOTHING")
                 # arduino.write('0'.encode())
                 # arduino.write('x'.encode())
@@ -107,14 +109,11 @@ while True:
     frameBolaA = cv2.resize(vr.orangeA, (240, 150))
     framelapanganA = cv2.resize(vr.hijauA, (240, 150))
 
-    # Mencampur closing orange + putih
-    # res2 = cv2.bitwise_or(vt.orangeD, vt.hijauD)
-    # res2_Up = cv2.bitwise_or(vt.orange_A, vt.hijau_A)  
 
-    contourLapanganD = deteksi("Hijau", "Depan" , vr.hijauD)
-    contourLapanganA = deteksi('Hijau', "Atas", vr.hijauA)
-    contourBolaD = deteksi("Orange", "Depan", vr.orangeD)
-    contourBolaA = deteksi("Orange", "Atas", vr.orangeA)
+    contourLapanganD = deteksi("Hijau", "Depan" , vr.hijauD, vr.orangeA)    
+    contourLapanganA = deteksi('Hijau', "Atas", vr.hijauA, vr.orangeA)
+    contourBolaD = deteksi("Orange", "Depan", vr.orangeD, vr.hijauD)    # argumen ke 4 hanya berlaku untuk mendeteksi bola di dalam lapangan
+    contourBolaA = deteksi("Orange", "Atas", vr.orangeA, vr.hijauA)     # argumen ke 4 hanya berlaku untuk mendeteksi bola di dalam lapangan
 
     frameFront = vr.imgToBytes("imgFront", "-FRAME_FR-", frame)
     frameUpper = vr.imgToBytes("frameUpper", "-FRAME_UP-", frameUp)

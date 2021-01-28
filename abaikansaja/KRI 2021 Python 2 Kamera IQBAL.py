@@ -146,7 +146,6 @@ class kamera(Thread):
                         arduino.write('0'.encode())
                         arduino.write('w'.encode())
             elif len(contourBola_omni) == 0 :
-                    # cv2.drawContours(frame, [approx], 0, (0, 0, 255), 2)
                 print("NOTHING")
                 arduino.write('0'.encode())
                 arduino.write('v'.encode())

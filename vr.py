@@ -94,17 +94,3 @@ def RacikLapanganA(frameUp):
     # Membuat Closing (yaitu menutupi lobang lobang di dalam kontour warna)
     hijauA = cv2.morphologyEx(hijauA, cv2.MORPH_CLOSE, kernel)
     return hijauA
-
-
-# pusat = (int(x), int(y))
-# pusat_str = (int(x) - 35, int(y) + 15)
-# koordinat_str = ("(" + str(int(x)) + "," + str(int(y)) + ")")
-# font = cv2.FONT_HERSHEY_SIMPLEX
-# maxxx = (xx+w)+3
-# maxyy = (yy+h)+3
-# huxx = xx+int(w/2)
-# huyy = yy+int(h/2)
-# maxXX = constrain(maxxx, 0, 639)
-# maxYY = constrain(maxyy, 0, 479)
-# huXX = constrain(huxx, 0, 639)
-# huYY = constrain(huyy, 0, 479)
